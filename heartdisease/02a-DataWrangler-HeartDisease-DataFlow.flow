@@ -1,0 +1,401 @@
+{
+  "metadata": {
+    "version": 1,
+    "disable_limits": false
+  },
+  "nodes": [
+    {
+      "node_id": "60141592-f7a2-4456-b318-acfe11ceca1b",
+      "type": "SOURCE",
+      "operator": "sagemaker.s3_source_0.1",
+      "parameters": {
+        "dataset_definition": {
+          "__typename": "S3CreateDatasetDefinitionOutput",
+          "datasetSourceType": "S3",
+          "name": "heart_failure_clinical_records_dataset.csv",
+          "description": null,
+          "s3ExecutionContext": {
+            "__typename": "S3ExecutionContext",
+            "s3Uri": "s3://sagemaker-us-east-2-645411899653/heartdisease/heart_failure_clinical_records_dataset.csv",
+            "s3ContentType": "csv",
+            "s3HasHeader": true,
+            "s3FieldDelimiter": ","
+          }
+        }
+      },
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "default",
+          "sampling": {
+            "sampling_method": "sample_by_limit",
+            "limit_rows": 50000
+          }
+        }
+      ]
+    },
+    {
+      "node_id": "71e666aa-a392-4559-9923-156ba5c1eaad",
+      "type": "TRANSFORM",
+      "operator": "sagemaker.spark.infer_and_cast_type_0.1",
+      "parameters": {},
+      "trained_parameters": {
+        "schema": {
+          "age": "long",
+          "anaemia": "long",
+          "creatinine_phosphokinase": "long",
+          "diabetes": "long",
+          "ejection_fraction": "long",
+          "high_blood_pressure": "long",
+          "platelets": "long",
+          "serum_creatinine": "float",
+          "serum_sodium": "long",
+          "sex": "long",
+          "smoking": "long",
+          "time": "long",
+          "DEATH_EVENT": "long"
+        }
+      },
+      "inputs": [
+        {
+          "name": "default",
+          "node_id": "60141592-f7a2-4456-b318-acfe11ceca1b",
+          "output_name": "default"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "default"
+        }
+      ]
+    },
+    {
+      "node_id": "6310a0c1-1b96-450f-a937-de0cac3b1466",
+      "type": "TRANSFORM",
+      "operator": "sagemaker.spark.manage_columns_0.1",
+      "parameters": {
+        "operator": "Move column",
+        "move_column_parameters": {
+          "move_type": "Move to start",
+          "move_to_start_parameters": {
+            "column_to_move": "DEATH_EVENT"
+          }
+        },
+        "drop_column_parameters": {}
+      },
+      "inputs": [
+        {
+          "name": "df",
+          "node_id": "71e666aa-a392-4559-9923-156ba5c1eaad",
+          "output_name": "default"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "default"
+        }
+      ]
+    },
+    {
+      "node_id": "3860ea74-84d2-4cbb-a0f8-945dc23ff353",
+      "type": "TRANSFORM",
+      "operator": "sagemaker.spark.manage_columns_0.1",
+      "parameters": {
+        "operator": "Drop column",
+        "drop_column_parameters": {
+          "column_to_drop": "time"
+        }
+      },
+      "inputs": [
+        {
+          "name": "df",
+          "node_id": "6310a0c1-1b96-450f-a937-de0cac3b1466",
+          "output_name": "default"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "default"
+        }
+      ]
+    },
+    {
+      "node_id": "69c72cc3-5ce9-4fb3-8e5a-c451125d4da3",
+      "type": "TRANSFORM",
+      "operator": "sagemaker.spark.manage_columns_0.1",
+      "parameters": {
+        "operator": "Rename column",
+        "rename_column_parameters": {
+          "input_column": "DEATH_EVENT",
+          "new_name": "target_heart_failure"
+        },
+        "drop_column_parameters": {}
+      },
+      "inputs": [
+        {
+          "name": "df",
+          "node_id": "3860ea74-84d2-4cbb-a0f8-945dc23ff353",
+          "output_name": "default"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "default"
+        }
+      ]
+    },
+    {
+      "node_id": "347e4bc1-aff5-48bb-afeb-d30ba36a41a0",
+      "type": "TRANSFORM",
+      "operator": "sagemaker.spark.process_numeric_0.1",
+      "parameters": {
+        "operator": "Scale values",
+        "scale_values_parameters": {
+          "scaler": "Standard scaler",
+          "standard_scaler_parameters": {
+            "center": true,
+            "scale": true,
+            "input_column": "creatinine_phosphokinase",
+            "output_column": "creatinine_phosphokinase_scaled"
+          }
+        }
+      },
+      "trained_parameters": {
+        "scale_values_parameters": {
+          "standard_scaler_parameters": {
+            "_hash": 1580859971298648600,
+            "scaler_model": "P)h>@6aWAK2mlwWWmCy*NYTjv003G6000vJ003=ebYWy+bYU-WVRCdWFfcGMFpZAOYQr!PMfd%TSv$gxO&qfA+E6fbD+X!Qi0XwjqR`-fkCM<rHl^D;_nbQyP!3Ch6U6)>Frhk=C<*hY@J<*)u9?Kj7&K<RDs+^WsL4SGY&{i5pWrkc#=|hp({b*{p@X~NopP};H1#NY(eKcIhh5*eYIO^rof7wRZ;aVb=BQey3D7Ut)ED@&d|tURoGWz@E2qk@(KU%=@=2=b<V|eD@8KtJ=?z~9!-L;C&}6VWe*53VAAd^uC_arCbcMF<<qA+s0|XQR000O87prAcr{KjW4gdfE3;+NC7ytkOZDn*}WMOn+FD`Ila&#>)FfcGME@N_IOD;-gU|?Wkxag645&%$30|XQR000O87prAch&-Gx)&c+k7773WNB{r;WMOn+FK}UUbS*G2FfcGJWjHxyI5}ZCEjckYHZ3$YHe@YgI599SH)At1Fg9j4G%-0cEn_e+FfMa$VQ_GHE^uLTadl;M?N-fh(?Ag3IBsH<p98R#gQ6<3Xq2L`N=R#xDu*I^sE|NaDO^xhZQ^yXSUahIiqa|<&J`yPJ@kkwo&a8?Z^0`d#I9r4N!*5%1LDvqvUX>_Z@!t?S<9PGx2h1pdr&Dufh{sn$}3_D05E*Ypfs{$zxf9Od!|!-%ka11otUU`S5`>}0PejH7b0(F=)F}5=pe>Cgeb-+(xBA&{9^0VTD)Q@Twvw$n<KH(AoBcI<=l9+)A)`)uEi@}PSTnzC-Oic_w(+?O}B@g_q%TU9kDPJ!HS@yT~CJ+fWjgx$LsgV;sW0Yis+gLgd?)1t($G)vV1aNMN~v;x*imUlq{jdBDTkYnSD(C3vlxjIME{5{+F7vkjv+eic+3+VMPL&T!~j5C__OOWLtKMQgg})=kk!B3h!+3U?K`nIfzo1o5h1BJJ3<|w-kpjGV}&VM|A~xM)?Kob$Nq<C+WW!eLkj#)h5|rQu5anLpQH5`lC9h>A0%kc*dJ^nx3^g$Kqt5vHl#3lNFwc=M4(*(>rvQ;GfK$cPQZhp+zTi%`04|5h3{`BQxc)qI8`O!adCH5DKmn+9!@{c5P*@hAOB6l%)j1-J^&t_I%<Yr~3g}#KSuFu<}DXRC%Y>Rn_$zzwN1I)i4RwU3K;Cp=x7m=+c>eh&#voItRBYb{SSpNLmz8)5f%e-jKG}bzZM;GkCB6EF|>$({L=|?Qyv&=>>==Keg5O_|Enz#VyJ#2Bt14t5MA?=3r2cYh&XPlTF(r9pa4fnegTGa9Wb>!H$Fb%p8uu_GJ8a*Y>b!yDynenB!n()!~fIDynyV9`dg=cLuX(#mE18POj(VG6YbbhcBT=mQx7dT7@dAR#3H2YWXJB3l*cG8_PAF7)GmJH}oe)UDGsOt7(mDefe>%Rxy^fmfl#(9pwSI@DHd2z$W`5{0&e`0|XQR000O87prAcX`?=gBLDyZAOHXWO#lD@WMOn+FD`Ila&#>)FfcGMEoC@4WjHxuIW0LcH8w3YH8x}|VmL7{EjME`GcY!0H#9LhGA&~;FfcB2Zeeh6c`k5aa&dKKbS`6ZV@obdW?*1oVpwZ8{YJ#|#b%YEa(7ome^HU0X>-_ei=jRMP)h*<6ay3h000O87prAc$!$o{$p8QVS^)q66951J0000000000q=5hc003=ebYWy+bYU-WVRCdWFfcGMFi=YY0u%!j0000802ixeQ>Wm?Ck_Ar01N;C02lxO00000000000HlHX0001OWprU=VRT_HE^uLTbS*G2FfcGKV{&6qO928D0~7!N00;mVt7TJ&Je)7q0ssIO3IG5|00000000000001_fj$8M0AyiwVJ~oDa&#>)FfcGMEoC@4WjHxuIW0LcH8w3YH8x}|VmL7{EjME`GcY!0H#9LhGA&~;FfcB2Zeeh6c`k5aa&dKKbWlqH0u%!j0000802ixeQ)#0<i6a0203ZMW08Ib@00000000000HlF>1ONbJVRT_HE^uLTbS*G2FfcGJWjHxyI5}ZCEjckYHZ3$YHe@YgI599SH)At1Fg9j4G%-0cEn_e+FfMa$VQ_GHE^uLTadl;ME@N_IP)h{{000001ONm8cmV(a2n7HD000"
+          }
+        }
+      },
+      "inputs": [
+        {
+          "name": "df",
+          "node_id": "69c72cc3-5ce9-4fb3-8e5a-c451125d4da3",
+          "output_name": "default"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "default"
+        }
+      ]
+    },
+    {
+      "node_id": "4af46931-9978-49a3-b034-18511e53b624",
+      "type": "TRANSFORM",
+      "operator": "sagemaker.spark.process_numeric_0.1",
+      "parameters": {
+        "operator": "Scale values",
+        "scale_values_parameters": {
+          "scaler": "Standard scaler",
+          "standard_scaler_parameters": {
+            "input_column": "serum_creatinine",
+            "center": true,
+            "scale": true,
+            "output_column": "creatinine_scaled"
+          }
+        }
+      },
+      "trained_parameters": {
+        "scale_values_parameters": {
+          "standard_scaler_parameters": {
+            "_hash": 2166356830711665000,
+            "scaler_model": "P)h>@6aWAK2mmLmWmCx#8>Pws003G6000vJ003=ebYWy+bYU-WVRCdWFfcGMFn!KVOT;h`fZ@A8W6s@>+Aq4-Jr{(6*Dy9yx0o-I34%-iyIExw1-%aMJTn(q45kD}@bOt-z~xLL1&lAk8nF^`jwEJAr!nezK|^u!nhaFHo2A5P103tV>Fajr>b4n&3O;~GifQw%(2bBn9?-tIgDiV_(`ES6RIMD_?*6Ik$6+l^0nkoZ=nK4Ve4e@NaLiP}=0fI^H^pGGK`s9J%r%+_-L3MOzcO{}l!UzkO)F-@4}YKd##S`xm-f%&N_~c~?|1J|O9KQH0000804J+uQ@kR@1r7iJ01N;C02lxO0BvP-VPs)+VJ|LlVRCdWFfcGMFfL<qV@obdW?*1oVpu9IbP@niO9KQH0000804J+uQ&WpKMc4uW02T@W07w7;0AyiwVJ~oDa&#>)FfcGMEnzq}G&f;6HZ3_~F*YqUIX5vaIAvuqEihs*GB_|}I5IL~V=ZGaFfcB2Zeeh6c`k5aa&dKKbnRA6Z__{!-8gP)Rg?p;mV=@yvS`$zU?rqAX%(qL^iUyzDik<?5Zc7+VzG8oe-tHE{z19-&?Bn2aNxp^;M{+~g%c-)n04$rA8klEpdK1U*6z%E^JZpeEpI=3R>lb5!b%Yfu*hI3r-&(pQ2!~TrGXv%=I#jaOsDu3@YnH;gs5}Ztdb4^+<O}@#NJHbJ6{UvD8bytT7preHu=V0e)zGGtRRImtXzJ3AXXa1o=a6ucmDI2`jej<$%>aVZXGWt_Fy6V>*m%quT9){Z@lJPY7;D?RY6I6zJVo#g+(aG@3iUS0^bOV=viIL5wn(KSWW6dJ{hzsDk8Hy9}9iTEM?TDj?aOaJ;H)BaC0L#(Wb=tpPI6e&1DY?QVzPXDxpkviB}yeV?h>VM|KNRZNdp>bC{nB?`)wv5{0K6MyblRLbnD7I*9(7;_yX4Z*g>7SD0s<U&!8+w*Wj!{|)rHgdSBp&i<H^KcxU&yTIrV>Kvz&s>0(LZq9Lf+U^{Rqk)F{b105hcp{!QD8x_h(8(D8Xy&v-A^$HeI-03n;5rQm$wwI(l#7bea(6V+CUA$e@H%OG)b*^Eqs&yal2$^>@)*L~Wg0AY1L|vT>%C@EpBTg^%6DmB<(*d7RnK>Wrmq%N)1u7q)b&^UszdC)%K&>HcZv@T4sJ5y0ahK8w3)^%hp-*(1#S8*_xWZW;O)+%h|um#!a>6IVYvzEg@`ymwbAkU&IuSJ4F(pIFpn11xMqmi>lKsQU_27C<@j`mx<h;rKA#><%XoW;>yi$bqY<c&#&5P9pIDCf6m+5-dsD0SXKY$gqZROw|D^f4H+@!o{IBNZYEI5WAmwrN61r!*`RJ{cFKgwJR?aUq0*e{>lDTG>D;0y9W}{j)jR$5`*L6d$=xgQb%Kb{EWUlB9V{JKmkVELqKVlL>+wevB2T)4`1QY-O00;mlt7TJu-|P}20000W0000@0001FVRT_HE^uLTbS*G2FfcGJVK_H5H(@z8EjeN_HZ3$cH!&?ZWo0ofFk&z=I51;4GBRRgEn_e+FfMa$VQ_GHE^uLTadl;ME@N_IOD;-gU|?Wk@b9?fIQK-58e`u=rxnp(RAgt`9JbtIs1E>8O928D0~7!N00;mlt7TKk5*ww;000150RR9K00000000000001_fdBvi0BvP-VPs)+VJ~oDa&#>)FfcGMP)h*<6ay3h000O8C#z*syduQ~4gdfE3;+NC7ytkO0000000000q=EYY003=ebYWy+bYU+paA9(EEif=JFfcA-a$`_S0Rj{Q6aWAK2mmLmWm8j&H$~V2000&W002k;0000000000005+cKLG#$WMOn+FK}UUbS*G2FfcGJVK_H5H(@z8EjeN_HZ3$cH!&?ZWo0ofFk&z=I51;4GBRRgEn_e+FfMa$VQ_GHE^uLTadl;MP)h*<6ay3h000O8C#z*se&6g8BLDyZAOHXWO#lD@0000000000q=9_|003lRbYU+paA9(EEif=JFfc7)I5#vmVL3J}Ibtz3Ei^edF)cV{Wic%<VlXl|Fk?6}GGb#bV=yo<E^}^SaBz7paA9(Bb!BueV{&6qO9ci10000400aPd0RR9C1poj500"
+          }
+        }
+      },
+      "inputs": [
+        {
+          "name": "df",
+          "node_id": "347e4bc1-aff5-48bb-afeb-d30ba36a41a0",
+          "output_name": "default"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "default"
+        }
+      ]
+    },
+    {
+      "node_id": "eaf89863-9eef-47ff-a36a-a5cf886432c7",
+      "type": "TRANSFORM",
+      "operator": "sagemaker.spark.process_numeric_0.1",
+      "parameters": {
+        "operator": "Scale values",
+        "scale_values_parameters": {
+          "scaler": "Standard scaler",
+          "standard_scaler_parameters": {
+            "input_column": "serum_sodium",
+            "center": true,
+            "scale": true,
+            "output_column": "sodium_scaled"
+          }
+        }
+      },
+      "trained_parameters": {
+        "scale_values_parameters": {
+          "standard_scaler_parameters": {
+            "_hash": -3512381192745490000,
+            "scaler_model": "P)h>@6aWAK2mm*$Wm8jFN-xR)003G6000vJ003=ebYWy+bYU-WVRCdWFfcGMFn!KJOT;h`hT*$EW6s^s*cx@Oo(n?3YZ#NM8#ZY|GC^?Ze>bbF;38hbJI|LB7>}jE9%6nIn9v+Zl!W;xf)@)R*Gyt&TrFlh8}yW?Xvsqd>;e_WkYF#>pyYUeH>y#p4!(dF%EiUC(Sztkzr*mc?)r9Doo$c5O^v<0eH>mNq*1ap4ZtvAqfhYe_%IPRiF2h6V&zo%Df*^prjWFWUZ3T2IkUZlZvE*l8EhR`TCjS4{&QkMU#>R(`Ki|5;q~^m-FyO2O9KQH0000805_{;Q?cz6@D2a~01N;C02lxO0BvP-VPs)+VJ|LlVRCdWFfcGMFfL<qV@obdW?*1oV$k=B2nGO9O9KQH0000805_{;Q-8cPQq}?h02T@W07w7;0AyiwVJ~oDa&#>)FfcGMEoCugWj8W1Gc7h`VK^-`G&V9VI5aphEiyGRWH4i6Ib$?oW-VhdFfcB2Zeeh6c`k5aa&dKKbnRBnZqq;z-q>zxRe%I^EeAzaWYMTa!AeML(kh1{dZ;*{3KcGZ=q6qli?x&br;t{8gFZkHJ)#O;fD@0=w?N{+86jpJyUtG=QVxhiqsZEw`M&vPW@jyLK6+Nc2+v}*gaue+v7A?>3__^)RM0}-4t_It1$c@Xz6JaZd@Cgy+%>I=5rBK|;JL(`?Rl@4BRWbk_pqK~RQdDwAG_NpH`me?q;QUv%Ww9@5>ev$ugdxG>MIjx$y&PN<&0WK%Sk*~$o;&%am{ZN@7)`}`Ib5aOK4e8ML#gHjIb~d<piBJouA_yL6v-apK`>s?V5Iz`jAf+ElaAzY(Kz4k1|aeb*LL~V0MqN@EqLC5KeL^asQ>JBINS9!=jvrE-cF^n_J*jN6J`G1jSXnqFf(y!nr)=r@}j1+#ia<Q;wq4lzMT$4hPzg{*vMFc|dP)bW&H8XOdsUURO2%JWT%u^qG_%S3Ao7m{C4u0A0Vt==bZKh-p>P@eDTSM4YrcN78Vhf&Lsx!xf%NXAO$*<2!UZ!atrm>rll1LyL~5>X*1qeL~7{RsrRbs<ylxowNzuAw9ZI`X2RsyXC4=RlTg2k-9j7@OPOGi`|e0y4QNIJ2W6B35fblKG1llwN=dzys#N)CC#!aGktCK<$>lBr{^-k-ou^YLz9D>jQD`nMkF1kGutI>M}I+^LCbr-z6J1h=W$GEcgEo$;jKZrG3iB!BtNau3HZ(p86yn_7K<>Smb9d1h}rFy(%N7=QnKv^bccEad=S2v9#6|?dx+<e4w&N+*cy)CY`FokUH>WQ#5r~+R_)E$q@rdk<RSk`^L2OftoZm}&B@iAT!cXCllUcc-|-6ZTdPpfD`mY>SZIVcGYe&F#k7{HCbg_at!9}It(svNrcpIkDz&8t)oR&VG8*Q}V(u`H(7AuaWP~>1i|{v4O9KQH0000805_{;Q}Q9ilOq5C03ZMW08Ib@0AyiwVJ|LlVRCdWFfcGMFfC;<W@R@rGBYhUWMMchG&D9cEjTndF)cDRF=Q}fV>x3qVP-93FfcGKb8ca9aCt6pVRCVGWpplMa$`#_N@ieSU}AXLz1-}kr{fpX;5!^EqQ9uf&a^pfxy4W)08mQ-0u%!j0000805_{;Q&U(<FUkM_09pY6022TJ00000000000HlEc0001OWprU=VRT_HaA9(EEif=JFfdR{0Rj{Q6aWAK2mm*$WmB>36YvfI000aC000;O0000000000005+c`v3p{ZDn*}WMOn+FD`Ila&#>)FfcGME@N_IP)h*<6ay3h000O8H>+h+f4nqO)&c+k7773WNB{r;0000000000q=7#H003lRbYU-WVRCdWFfcGMFfC;<W@R@rGBYhUWMMchG&D9cEjTndF)cDRF=Q}fV>x3qVP-93FfcGKb8ca9aCt6pVRCVGWpq$W0Rj{Q6aWAK2mm*$WmEDY#FHZc001BW002z@0000000000005+cdjtRgWMOn+FD`Ila&#>)FfcGMEoCugWj8W1Gc7h`VK^-`G&V9VI5aphEiyGRWH4i6Ib$?oW-VhdFfcB2Zeeh6c`k5aa&dKKbS`6ZV^B*41^@s600aO80C)ia00{*E0000"
+          }
+        }
+      },
+      "inputs": [
+        {
+          "name": "df",
+          "node_id": "4af46931-9978-49a3-b034-18511e53b624",
+          "output_name": "default"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "default"
+        }
+      ]
+    },
+    {
+      "node_id": "64f9e29f-e167-4fdb-a11d-e17e1b6c25e8",
+      "type": "TRANSFORM",
+      "operator": "sagemaker.spark.process_numeric_0.1",
+      "parameters": {
+        "operator": "Scale values",
+        "scale_values_parameters": {
+          "scaler": "Standard scaler",
+          "standard_scaler_parameters": {
+            "input_column": "ejection_fraction",
+            "output_column": "ejection_fraction_scaled",
+            "center": true,
+            "scale": true
+          }
+        }
+      },
+      "trained_parameters": {
+        "scale_values_parameters": {
+          "standard_scaler_parameters": {
+            "_hash": 8827659575789309000,
+            "scaler_model": "P)h>@6aWAK2mnN@Wm7#7*tyF9003G6000vJ003=ebYWy+bYU-WVRCdWFfcGMFnx}}YQr!PMDP8KJv+j|sp{sMv!P(fRjj3TBPv-!T2V;IzgMYgNhtI<!_Iqq0qrnn*h5I~0wd}Zi5xL~2=By9$R&{&85e`ej2a!KAsBMd09#L)(MQ;CWhb}0muK0(c5MUSfFq@B!&1?mXhpk0e_l3i-4$zU`N&k0)Fh{Vr@MZtHx+<>z>2<rU1H%waCOAwqtfAK4~2hg_0y{x|I_kmAgpFih1NW>S>v?<Lo*h~Z+D7&*guacwH`i5W_0<F<@)pmP)h>@6aWAK2mnN@Wm80l9vuz<000aC000;O003=ebYWy+bYU+paA9(EEif=JFfcA-a$`#_N@ieSU}D&LL(mogP)h>@6aWAK2mnN@WmB-m7tq-P000&W002k;003lRbYU-WVRCdWFfcGMFfB1RH)1(rV>vBhH8eIYG&M6dEn#IiIV~_UFk)n6Vm350W-u*dFfcGKb8ca9aCt6pVRCVGWpwRU&ubGw6rOCh$r99qI?F~v35$)b#3eE9nwB7y_E0=Xk?KW6CfV7#IN7B8qmq{V2R%y<J$R5Jcoh6AJoXRp?%k7!Z#KK#B-_T+gLr5N%glS<_rCYuyjgbh(bFnM_$F4$Sb#+aO9e$tA%q4`8O;yv;Fr5Cz%!lVTfkq#*JGm2U0Ed^0J!%So{hYjf%j@9praUb7i%#_k?7jDhuu$iR^t_<aE6u3Zw|#uqsa4LmGkb$`>&sKYpd~!my@(6%ZWT#$p5^tamDQt=glj(^_sQ`7SWQRq+QRz62ih9l;icfbZ(Y!1VwbMJ<1VT%QmbQbs?V&S`rnJS+0kL0VPWrZByIhz|1aT{u#L37*1?cV*g7`S;!ai2PLThU09M(CO^-s4wSJV3$iUcC8;stg!2W=Plb23v^N%oryNA7%Z<`r0}gZ;{UycWbAaC9=%}tB&nUluy)JJ6c%1$V=((64R-0shNXZ{lfNor1^oMnh({WY7@r*X-I6ZB54#n|6BmFrP$16M$Pa72ACwJ&1!9SWg?NGq~LyL}P8W*@uLqhUVMh4}wqI8^XjdTgzAuYI0+Aeimt79uOHLapmkg||KxI0XP#g0!s&FQ?=+SDTk@rd$W+E;m})fLtC9KYqMW!1DOGhB7$#lC8j_P}L;eSkZ~`vwQM7;yosCM4TTW0p<Ww)UL1ypHp1eGA~--dafL_9o#V;jK}*3F!rhC_lB?^Z3s886!;w7LzcSmer_ch}rL#<Jw?6VzOm>belROd=NgL9!^WLJ;ZTH56s~RY>mfnb!?AVw)+Hh!W{cks}5#tT2Z6p^N@d~`LaKKR($*~=j3uu&O;#OarhFt*LI5GTdP>rsuitToNxLTGl~^+*)SJt1~tuQy>1#0%(|}YhF;T`tM$eEwOYko)SJfgLjItD(3yY4B!o8Mi|{v4O9KQH0000807R>0Q)12bmLmWF03ZMW08Ib@0AyiwVJ|LlVRCdWFfcGMFfB1RH)1(rV>vBhH8eIYG&M6dEn#IiIV~_UFk)n6Vm350W-u*dFfcGKb8ca9aCt6pVRCVGWpplMa$`#_N@ieSU}BJ+qJ1!Xcip^QrG8&mM1N6{ooRE}a*Lrp08mQ-0u%!j0000807R>0Q#}#bxyt|m09pY6022TJ00000000000HlEc0001OWprU=VRT_HaA9(EEif=JFfdR{0Rj{Q6aWAK2mnN@Wm80l9vuz<000aC000;O0000000000005+c`~Uy|ZDn*}WMOn+FD`Ila&#>)FfcGME@N_IP)h*<6ay3h000O8M5|>}u*MhA*#ZCn7773WNB{r;0000000000q=7&I003lRbYU-WVRCdWFfcGMFfB1RH)1(rV>vBhH8eIYG&M6dEn#IiIV~_UFk)n6Vm350W-u*dFfcGKb8ca9aCt6pVRCVGWpq$W0Rj{Q6aWAK2mnN@Wm96!_Ld_6001BW002z@0000000000005+ce*^#kWMOn+FD`Ila&#>)FfcGMEipGYVmV@CIW1u|G&U_XH8V9WVP!ZuEif`LVq|1uHZ(J4FfC&+FfcB2Zeeh6c`k5aa&dKKbS`6ZV^B*41^@s600aO80C)ia01X8I0000"
+          }
+        }
+      },
+      "inputs": [
+        {
+          "name": "df",
+          "node_id": "eaf89863-9eef-47ff-a36a-a5cf886432c7",
+          "output_name": "default"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "default"
+        }
+      ]
+    },
+    {
+      "node_id": "b18d7787-3d41-4fe1-8268-fa18ad2e3981",
+      "type": "TRANSFORM",
+      "operator": "sagemaker.spark.process_numeric_0.1",
+      "parameters": {
+        "operator": "Scale values",
+        "scale_values_parameters": {
+          "scaler": "Standard scaler",
+          "standard_scaler_parameters": {
+            "input_column": "platelets",
+            "center": true,
+            "scale": true,
+            "output_column": "platelets_scaled"
+          }
+        }
+      },
+      "trained_parameters": {
+        "scale_values_parameters": {
+          "standard_scaler_parameters": {
+            "_hash": 5022796624332810000,
+            "scaler_model": "P)h>@6aWAK2msTjYEub|Kx4`P003G6000vJ003=ebYWy+bYU-WVRCdWFfcGMFnx|sO9L?wNAG@&Id8-2w!7M^=LKP**Dy_HZ7}~xCKOusyBn=qis*HCzxU=0%3{v2g^*qaMpOq9IbwPf&Wf3kOCm8bdW}g>3N58EXtK}%8%LSZMcCf=UB4NIet3Lp*A09Mc9gOSzN$OXigtzW<X3Io6{G9%)+xI^()_SdxK~)2DnK`4Ri7agj)k9ttt-joqEx}k57W``Vd84zRHy;tf4Fb#3mOUig<2ZWG-I*+@<-yI$E3V~zth*qj5gD<+`R)(O9KQH000080Mn*wQ`DjD4GsVR01N;C02lxO0BvP-VPs)+VJ|LlVRCdWFfcGMFfL<qV@obdW?*1oVn}xA<^%vxO9KQH000080Mn*wQ!qb2?%M(Y02T@W07w7;0AyiwVJ~oDa&#>)FfcGMEn{UlG&Er}FfA}-Ff%PQH8wddVrDcqEo5e8Ha0Y6G&nXjH7#Q>FfcB2Zeeh6c`k5aa&dKKbnRBnZqq;z-Z*Y*Re(@oEeE11vS`$zU?rqAX_W&NJroY8LWK)LXcMo4#o9^zQ<PSDgFZkHJ)(*y;J}p|=RN>}BM$%vgqU^gIzMelIUo*=B5QZ%`{tXOowdBV_N0svzK)e57GROVQce+52%+9nMhksA_|4oB;F(VGE#R-<*@UQb*R+xj0o;27&&A$M&wIHP(ourBjkN@$NDn{gpFV#6em_}33a41P{AORQG>Sd{RXJb3(3?MIudXF4Ue2g>w4B(3h3wC38<)H`abLgm8n38Lu!xogCGGhJmJk-^p&Y-{rt@=rBPgP0?NW}Iwj9H1P!ICSpk+}JndSLd=uxIAqc(MX4$SNj7My~c8N!J+CC<Opl!a_AyI+uU(1m3QWwHyr>QEUAvLHLMTaapFPB@#x{8V^n3%f&6c*<dvs$47V*5E+<(eG0nJ`d;(j*jaJ^NjNg+3WHKfQRY7fIgGZqiRRlZ&UKS6rgM882x^oqjXYLcszs6IZ993oda<=&_I6<#Ni5$#ghhw`0*V&9^oHOopdPV|Di>PQ?+wkr#>P1Fe8I<QBhiMQzLBxcSsAbleR-$&uTf!R7ERkC8R8lAiQm+!D2h0zUH>xXg2kUL42ZollD~JX?0cgd^c$LYEd;U$_!6keZHqU#O}Eau=j8$_`u-c1|uF|)e%XXY0Pp6YiiGE!*97y*S7%P?mUPH?anwHB)l~!HzvIh5$C7YJ3ikz0b``jz+w{S(V`mH3^BXiVp1E7M?$t7pEjvGzz5;8>Cv=|wuiVb>3}&Jfvw^Ajh5pR%kdtAPLyMJV%6S^O)6@%0v__OG+%Tl&x()##hhHs$yo@bJc?dIcWgHwy|waXtz6Q|`GtC5F(Y3xR}6EhVo=kpSF5IR&#daYZs-+#rCeRQTd9=HCB1H}EN1s}2%Y*zOhRZAz6gH<P)h>@6aWAK2msTjYE#?w0wE&+001BW002z@003lRbYU+paA9(EEif=JFfc7+WjQo7VKgu;Fk~<@Ei^SYIW1ylG&e0|W@R=uG-Wh6HZ?UZV=yo<E^}^SaBz7paA9(Bb!BueV{&6lE=p!#U|?eSE5{Nda4Fe6>1)=9713W*WM|qOw%lT<4**b00Rj{Q6aWAK2msTjYEub|Kx4`P003G6000vJ0000000000005+c00000ZDn*}WMOn+FK}UUbS*G2FfcGsO928D0~7!N00;onrfO5vq3sP00000C0000O00000000000001_f%^ae0BvP-VPs)+VJ|LlVRCdWFfcGMFfL<qV^B*00u%!j000080Mn*wQ!qb2?%M(Y02T@W07w7;00000000000HlFG0RRAGVRT_HaA9(EEif=JFfc7+WjQo7VKgu;Fk~<@Ei^SYIW1ylG&e0|W@R=uG-Wh6HZ?UZV=yo<E^}^SaBz7paA9(Bb!Bu=O928D0~7!N00;onrfO5$^#UOy0000W0000@00000000000001_fq(=60AyiwVJ|LlVRCdWFfcGMFfC(cIW#n3G%zhNWH2)=G&MFkEn;RgH!WmlWi~c6Wi&W8H8m|`FfcGKb8ca9aCt6pVRCVGWpplMa$`_S1qJ{B000C41ORve000gJ00000"
+          }
+        }
+      },
+      "inputs": [
+        {
+          "name": "df",
+          "node_id": "64f9e29f-e167-4fdb-a11d-e17e1b6c25e8",
+          "output_name": "default"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "default"
+        }
+      ]
+    },
+    {
+      "node_id": "e6145b7a-63ea-4673-9d34-097bd6fbd3d9",
+      "type": "VISUALIZATION",
+      "operator": "sagemaker.visualizations.quick_model_0.1",
+      "parameters": {
+        "name": "QuickModelHeartDiease",
+        "label": "target_heart_failure"
+      },
+      "inputs": [
+        {
+          "name": "df",
+          "node_id": "b18d7787-3d41-4fe1-8268-fa18ad2e3981",
+          "output_name": "default"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "default"
+        }
+      ]
+    },
+    {
+      "node_id": "1915c4c4-5b1f-47cc-aeda-605bd0b88175",
+      "type": "VISUALIZATION",
+      "operator": "sagemaker.visualizations.multicolinearity_0.1",
+      "parameters": {
+        "name": "Untitled",
+        "analysis": "Principal component analysis"
+      },
+      "inputs": [
+        {
+          "name": "df",
+          "node_id": "b18d7787-3d41-4fe1-8268-fa18ad2e3981",
+          "output_name": "default"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "default"
+        }
+      ]
+    },
+    {
+      "node_id": "52276e4c-d65e-40ae-a75b-9eac18158a53",
+      "type": "VISUALIZATION",
+      "operator": "sagemaker.visualizations.multicolinearity_0.1",
+      "parameters": {
+        "lasso_parameters": {
+          "l1": 1,
+          "problem_type": "Classification",
+          "label": "target_heart_failure"
+        },
+        "name": "Untitled",
+        "analysis": "Lasso feature selection"
+      },
+      "inputs": [
+        {
+          "name": "df",
+          "node_id": "b18d7787-3d41-4fe1-8268-fa18ad2e3981",
+          "output_name": "default"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "default"
+        }
+      ]
+    }
+  ]
+}
