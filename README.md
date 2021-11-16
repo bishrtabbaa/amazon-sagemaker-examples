@@ -1,8 +1,8 @@
 # amazon-sagemaker-examples
 
-## Amazon SageMaker Overview
+## :hammer_and_wrench: Amazon SageMaker Overview
 
-[Amazon SageMaker](https://aws.amazon.com/sagemaker/) is a fully managed service for data science and machine learning (ML) workflows.
+[Amazon SageMaker](https://aws.amazon.com/sagemaker/) is a managed service for data science and machine learning (ML) workflows.
 You can use Amazon SageMaker to simplify the process of building, training, and deploying ML models.
 
 ## :hammer_and_wrench: Amazon SageMaker Setup

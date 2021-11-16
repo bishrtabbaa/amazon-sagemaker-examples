@@ -1,31 +1,31 @@
 # Heart Failure Prediction Model using Amazon SageMaker
 
-## :health_worker: Heart Failure Machine Learning Model Motivation
+## :hospital: 0.0 Heart Failure Machine Learning Model Motivation
 
-Improved data and analytical models can assist healthcare providers in identifying patients who are at-risk from heart failure, thus allowing providers to proactively recommend and implement a comprehensive protocol consisting of lifestyle changes, pharmaceutical drugs, and advanced interventions if necessary.  Therefore, data analytics and machine learning can play a part in the overall healthcare solution that saves lives from heart failure and other CardioVascular Diseases (CVD) and improves the quality and longevity of life.  This example project follows the [CRISP-DM](https://en.wikipedia.org/wiki/Cross-industry_standard_process_for_data_mining) methodology in which the data analytics lifecycle consists of iterative steps:
+Improved data and analytical models can assist healthcare providers in identifying patients who are at-risk from heart failure, thus allowing providers to proactively recommend and implement a comprehensive protocol consisting of lifestyle changes, pharmaceutical drugs, and advanced interventions (e.g. angioplasty, catheter ablation, stent placement, and surgery to repair valves and vessels).  Therefore, data analytics and machine learning (ML) can play a part in the overall healthcare solution that saves lives from CardioVascular Diseases (CVD) and improves the quality and longevity of life.  This example project uses [Amazon SageMaker](https://aws.amazon.com/sagemaker/), and it follows the [CRISP-DM](https://en.wikipedia.org/wiki/Cross-industry_standard_process_for_data_mining) methodology in which the data analytics lifecycle consists of iterative steps:
 
-- Business understanding
-- Data understanding
-- Data preparation
-- Modeling
-- Evaluation
-- Deployment
+- Business Domain Understanding
+- Data Understanding
+- Data Preparation
+- ML Modeling
+- ML Evaluation
+- ML Deployment
 
-## :heart: Heart Failure Domain Understanding
+## :heart: 1.0 Heart Failure Domain Understanding
 
 Cardiovascular disease (CVD) is a leading cause of death globally, taking approximately 17 million lives each year. CVDs are a group of diseases of the heart and blood vessels and include coronary heart disease, cerebrovascular disease, rheumatic heart disease and other conditions. More than four out of five CVD deaths are due to heart attacks and strokes, and one third of these deaths occur prematurely in people under 70 years of age.
 
-The most important behavioural risk factors of heart disease and stroke are unhealthy diet, physical inactivity, tobacco use and harmful use of alcohol. The effects of behavioural risk factors may show up in individuals as raised blood pressure, raised blood glucose, raised blood lipids, and overweight and obesity. These “intermediate risks factors” can be measured in primary care facilities and indicate an increased risk of heart attack, stroke, heart failure and other complications.
+The most important behavioural risk factors of heart disease and stroke are unhealthy diet, physical inactivity, tobacco use and harmful use of alcohol. The effects of behavioural risk factors may show up in individuals as raised blood pressure, raised blood glucose, raised blood lipids, and overweight. These “intermediate risks factors” can be measured in primary care facilities and indicate an increased risk of heart attack, stroke, heart failure and other complications.
 
 Cessation of tobacco use, reduction of salt in the diet, eating more fruit and vegetables, regular physical activity and avoiding harmful use of alcohol have been shown to reduce the risk of cardiovascular disease. Health policies that create conducive environments for making healthy choices affordable and available are essential for motivating people to adopt and sustain healthy behaviours.
 
-Identifying those at highest risk of CVDs and ensuring they receive appropriate treatment can prevent premature deaths. Access to noncommunicable disease medicines and basic health technologies in all primary health care facilities is essential to ensure that those in need receive treatment and counselling.
+Identifying those at highest risk of CVDs and ensuring they receive appropriate treatment can improve quality and longevity of life as well as prevent premature deaths.
 
-[Source](https://www.who.int/health-topics/cardiovascular-diseases)
+[Heart Disease WHO Source](https://www.who.int/health-topics/cardiovascular-diseases)
 
-## :floppy_disk: Heart Failure Data Understanding
+## :floppy_disk: 2.0 Heart Failure Data Understanding
 
-The data set used in this example project was sourced from the University of California Irvine (UCI) Machine Learning Repository.  The data consists of 299 anonymized patient records with thirteen (13) features that were collected from patients at the Faisalabad Institute of Cardiology and at the Allied Hospital in Faisalabad during April-December 2015:
+The data set used to train our ML models consists of 299 records of patients who experienced heart failure while at the Faisalabad Institute of Cardiology and at the Allied Hospital in Faisalabad during the period of April-December 2015; each record consists of thirteen (13) features and the target feature is a binary attribute that denotes whether the patient survived the heart failure or not. Therefore, this ML problem can be framed as a supervised classification problem such that the target feature denotes 1 for death from heart failure and 0 for survival/no failure; the goal is to predict whether new incoming patients with a set of similar attributes will survive from heart failure or not.  Also, note that the data set was sourced from the highly regarded and curated University of California Irvine (UCI) Machine Learning Repository. 
 
 - age: age of the patient (years)
 - anaemia: decrease of red blood cells or hemoglobin (boolean)
@@ -41,12 +41,77 @@ The data set used in this example project was sourced from the University of Cal
 - time: follow-up period (days)
 - [target] death event: if the patient deceased during the follow-up period (boolean)
 
-[Source](https://archive.ics.uci.edu/ml/datasets/Heart+failure+clinical+records)
-[Paper by Davide Chicco and Guiseppe Jurman](https://doi.org/10.1186/s12911-020-1023-5)
+[ML Data Source](https://archive.ics.uci.edu/ml/datasets/Heart+failure+clinical+records)
+[ML Paper by Davide Chicco and Guiseppe Jurman](https://doi.org/10.1186/s12911-020-1023-5)
 
-## :bar_chart: Heart Failure Data Preparation
+## :bar_chart: 2.1 Heart Failure Data Preparation
 
-abc
+For data exploration and preparation, I took a holistic approach that used Amazon Sagemaker [Data Wrangler](https://aws.amazon.com/sagemaker/data-wrangler/) as well as Jupyter notebook operations applying Python libraries such as pandas, matplotlib, and seaborn to interactively explore the data set.
+
+Amazon SageMaker Data Wrangler is a visual component for aggregating, exploring, and preparing data that simplifies the data pipeline and feature engineering process so that you can reduce the time it takes to engineer features for ML models from weeks and days into hours and minutes.  Data Wrangler has data connectors for S3, Athena, RedShift, Snowflake and other data sources, and it has more than 300 built-in data transforms so that you can quickly normalize, enrich, and combine features without having to write any code.  Data Wrangler enables you to also author custom transformations using Pandas, PySpark, and SQL when necessary.  Data Wrangler also has a robust set of visualization templates including histograms, scatter plots, box and whisker plots, line charts, and bar charts that are all available to help you understand your data, identify relationships and spot outliers.  Data Wrangler has a Quick Model feature that enables you to train a simple ML model using the Random Forest algorithm and quickly diagnose issues earlier in your data pipeline before more complex models are even deployed into production. Data Wrangler also integrates with [SageMaker Clarify](https://aws.amazon.com/sagemaker/clarify/), making it easier to identify bias and imbalances during data preparation.  Finally, Data Wrangler workflows can be exported to a Notebook or Python script for MLOps automation; you can also publish features to [SageMaker Feature Store](https://aws.amazon.com/sagemaker/feature-store/) so that features can be reused and syndicated across ML projects and data science teams.
+
+#### 2.1.1 Data Wrangler - Data Import
+
+First, we import the data from an Amazon S3 bucket where I have already uploaded the CSV file from the UCI ML repository using the following Python code.
+
+```
+# cell 00 ... setup Exploratory Data Analysis of Heart Disease Data
+import boto3
+import sagemaker
+from sagemaker import get_execution_role
+
+region = boto3.Session().region_name
+
+session = sagemaker.Session()
+s3_bucket = session.default_bucket()
+s3_prefix = 'sagemaker/heartdisease/data/'
+
+s3 = boto3.Session().resource('s3')
+local_data_filename = 'heart_failure_clinical_records_data.csv'
+!wget https://archive.ics.uci.edu/ml/machine-learning-databases/00519/heart_failure_clinical_records_dataset.csv -O heart_failure_clinical_records_data.csv
+
+s3.Bucket(s3_bucket).upload_file(local_data_filename, s3_prefix + local_data_filename)
+```
+
+#### 2.1.2 Data Wrangler - Data Preparation - Data Types and Transformation Flow
+
+Second, we apply data type transformations to convert the columns from the raw character/string types to numeric types because ML models typically require that the input columns be numeric.  
+
+Third, we scale some of the non-boolean numeric columns using the standardization transform so that the scaled columns have a mean of 0 and standard deviation of 1; these scaled columns reduce the impact of outliers and improve the fit of the algorithm to the supervised training data as well as its ability to generally perform predictions on the evaluation and actual data in the real world.
+
+For both of these operations, Data Wrangler simplifies the data pipeline process with easy, built-in operations that can be applied without any code.
+
+![Heart Disease Data Wrangler Data Flow](../assets/heart-disease-2.1.2-datawrangler-flow.png)
+
+#### 2.1.3 Data Wrangler - Data Visualization
+
+Fourth, we generate several visual, analytical outputs including correlations, histograms, and table summary statistics; again, all of these analytical visual artifacts are produced conveniently and simply within the visual IDE without any code.
+
+![Heart Disease Correlation Heatmap](../assets/heart-disease-2.1.3-datawrangler-correlationheatmap.png)
+
+Based on the correlation heatmap, we can see that the attributes for serum creatinine, ejection fraction, serum sodium, age, and blood pressure have the top 5 highest correlations with our primary target_heart_failure feature; moreover, there appears to be secondary correlation between sex and smoking, diabetes, and high blood pressure.  Furthermore, if we examine the histograms below for age, creatinine, and ejection fraction, we can see high density clusters for each around 60+, above 1.0+, and below 40% respectively.
+
+![Heart Disease Age Histogram](../assets/heart-disease-2.1.3-datawrangler-histogram-age.png)
+
+![Heart Disease Creatinine Histogram](../assets/heart-disease-2.1.3-datawrangler-histogram-creatinine.png)
+
+![Heart Disease Ejection Fraction Histogram](../assets/heart-disease-2.1.3-datawrangler-histogram-ejectionfraction.png)
+
+#### 2.1.4 Data Wrangler - Data Analysis - Collinearity Lasso Feature Selection
+
+Next, we perform a collinearity attribute analysis on the data set columns to double check the earlier correlations and ensure that the most important attributes are included in the ML model.  SageMaker Data Wrangler's Collinearity feature uses a simple Linear Model, and it can be run in the context of classification or regression problems.  In this case, it builds the linear classifier with L1 term regularization and you can control the strength of the penalty.  The classifier itself has a ROC AUC score of 76.3% which on the order of previous work done on this data set without any tuning yet.  Furthermore, the collinearity analysis again confirms that age, ejection fraction, serum creatinine, sodium, and blood pressure.  Also, note that classifier standardizes features to have mean 0 and standard deviation 1 
+
+![Heart Disease Feature Collinearity](../assets/heart-disease-2.1.4-datawrangler-feature-collinearity.png)
+
+#### 2.1.5 Data Wrangler - Data Analysis - Quick Model
+
+![Heart Disease Quick Model](../assets/heart-disease-2.1.5-datawrangler-quickmodel.png)
+
+#### 2.2.1 Jupyter Notebook
+
+While many of the aformentioned data explorations can be performed conveniently in Data Wrangler, the inquisitive reader is invited to examine and inspect a Jupyter [notebook]() that performs several of the same operations through the use the pandas, matplotlib, and seaborn Python libraries.
+
+
 
 ## :brain: Heart Failure Machine Learning Model Build and Tune
 
