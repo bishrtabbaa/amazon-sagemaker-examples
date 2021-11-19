@@ -106,22 +106,49 @@ Next, I performed a collinearity attribute analysis on the data set columns to d
 
 #### 2.1.5 Data Wrangler - Data Analysis - Quick Model
 
-Next, I ran a SageMaker Quick Model analysis that uses the Random Forest algorithm to predict the binary classifaction of the target_heart_failure feature.  The model was trained with the default hyper parameters with no custom tuning and there was minimial preporcessing of the features.  Nonetheless, the model achieved an F1 score of 0.682 on the test data set and it also surfaces feature importance as a triple-check of earlier results.  
+Next, I ran a SageMaker Quick Model analysis that uses the Random Forest algorithm to predict the binary classifaction of the target_heart_failure feature.  The model was trained with the default hyper parameters with no custom tuning and there was minimal preprocessing of the features.  Nonetheless, the model achieved an F1 score of 0.682 on the test data set and it also surfaces feature importance as a triple-check of earlier results, again confirming that ejection fraction, age, serum creatinine, and sodium are consequential features.
 
 ![Heart Disease Quick Model](../assets/heart-disease-2.1.5-datawrangler-quickmodel.png)
 
+#### 2.1.6 Data Wrangler - Clean Up
+
+When you are not using Data Wrangler, it is important to shut down the instance on which it runs to avoid incurring additional fees.
+
+To avoid losing work, save your data flow before shutting Data Wrangler down. To save your data flow in Studio, select File and then select Save Data Wrangler Flow. Note that Data Wrangler automatically saves your data flow every 60 seconds.
+
+To shut down the Data Wrangler instance in Studio:
+
+- In Studio, select the Running Instances and Kernels icon.
+- Under RUNNING APPS is the sagemaker-data-wrangler-1.0 app. Select the shut down icon next to this app.
+
 #### 2.2.1 Jupyter Notebook
 
-While many of the aformentioned data investigations can be performed conveniently in Data Wrangler, the inquisitive reader is invited to examine and inspect a Jupyter [notebook](02b-HeartDisease-ExploratoryDataAnalysis.ipynb) that performs several similar operations through the use the pandas, matplotlib, and seaborn Python libraries.  Again, this approach can be more easily customized when your data set is very large (TBs of data with billions of rows), unstructured (e.g. image, audio, video, text), or requires complex column transformations beyond the existing set of 300+ built-in transformations available in DataWrangler.
+While many of the aformentioned data investigations can be performed conveniently in Data Wrangler, the inquisitive reader is invited to examine and inspect a Jupyter [notebook](02b-HeartDisease-ExploratoryDataAnalysis.ipynb) that performs several similar operations through the use of pandas, matplotlib, and seaborn Python libraries.  Again, this approach makes sense when your data set is very large (TBs of data with billions of rows), unstructured (e.g. image, audio, video, text), or requires complex column transformations beyond the existing set of 300+ built-in transformations available in Data Wrangler.
 
-## :brain: Heart Failure Machine Learning Model Build and Tune
+## :brain: 3.0 Heart Failure Machine Learning Model Build and Tune
 
-abc
+Now that the data set has been engineered for features, we can begin to build, evaluate, and tune ML models.  Amazon SageMaker has a robust, easy-to-use set of components to build and tune ML models.
 
-## :computer: Heart Failure Machine Learning Model Deployment
+First, SageMaker supports almost two dozen built-in [Algorithms](https://docs.aws.amazon.com/sagemaker/latest/dg/algos.html), and it also enables you to bring your own and customize the model further.  Since this Heart Disease project has been framed as a binary classification problem on tabular data, I planned to use the Linear Learner, Random Forest, and XGBoost models which are all appropriate for tabular data.
 
-abc
+Second, I planned to test different sets of hyperparameters across the aforementioned algorithms.  Tracking all these iterative activities in an effective manner was a good opportunity to use SageMaker [Experiments](https://aws.amazon.com/blogs/aws/amazon-sagemaker-experiments-organize-track-and-compare-your-machine-learning-trainings/) which enables you to organize, track, compare, and evaluate your machine learning experiments.  SageMaker Experiments automatically tracks the inputs, parameters, configurations, and results of your iterations as trials. You can assign, group, and organize these trials into experiments. SageMaker Experiments is integrated with Amazon SageMaker Studio providing a visual interface to browse your active and past experiments, compare trials on key performance metrics, and identify the best performing models.  In this project, there was one parent Experiment (sm-heartdisease-exp-YYYY-mm-dd), one child trial for each algorithm (sm-heartdisease-trial-algo-YYYY-mm-dd), and multiple trial components (e.g. grandchildren) associated to the artifacts each hyper parameter set assigned to the algorithm.
 
-## :sun_behind_large_cloud: Conclusion
+Third, I needed to efficiently explore the universe of hyperparameters appropriate to each algorithm and find the best version of a model.  Again, this was an opportunity to leverage another SageMaker component for [Automated Model HyperParameter Tuning](https://aws.amazon.com/blogs/machine-learning/amazon-sagemaker-automatic-model-tuning-produces-better-models-faster/) which executes many training jobs in parallel on your data set using the algorithm and rangers of hyperparameters you specify.  It then chooses the hyperparameter values that result in a model that performs the best, as measured by a metric that you choose.
 
-abc
+Fourth, I needed to understand what features were important to the best performing model in each algorithmic family and how important they were.  Amazon SageMaker [Clarify](https://aws.amazon.com/blogs/aws/new-amazon-sagemaker-clarify-detects-bias-and-increases-the-transparency-of-machine-learning-models/)  provides tools to help explain how machine learning (ML) models make predictions as well as determine whether data used for training models encodes any bias. These tools can help ML modelers and developers and other internal stakeholders understand model characteristics as a whole prior to deployment and to debug predictions provided by the model after it's deployed. Transparency about how ML models arrive at their predictions is also critical to consumers and regulators who need to trust the model predictions if they are going to accept the decisions based on them. SageMaker Clarify uses a model-agnostic feature attribution implementation of SHAP, based on the concept of a Shapley value from the field of cooperative game theory that assigns each feature an importance value for a particular prediction.
+
+#### 3.1 Linear Learner Model
+
+#### 3.2 Random Forest Model
+
+#### 3.3 XGBoost Model
+
+#### 3.4 Comparing the ML Models
+
+## :computer: 4.0 Heart Failure Machine Learning Model Deployment
+
+abc123
+
+## :sun_behind_large_cloud: 5.0 Conclusion
+
+abc123
