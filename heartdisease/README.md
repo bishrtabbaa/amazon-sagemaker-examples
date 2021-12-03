@@ -1,6 +1,6 @@
 # Heart Failure Prediction Model using Amazon SageMaker
 
-## :hospital: 0.0 Heart Failure Machine Learning Model Motivation
+## :bulb: 0.0 Heart Failure Machine Learning Model Motivation
 
 Improved data and analytical tools can assist healthcare providers in identifying patients who are at-risk from heart failure, thus allowing providers to proactively recommend and implement a holistic protocol consisting of lifestyle changes, pharmaceutical drugs, and advanced interventions (e.g. angioplasty, catheter ablation, stent placement, and surgery to repair valves and vessels).  Therefore, data analytics and machine learning (ML) can play an important part in the overall healthcare solution that saves lives from CardioVascular Diseases (CVD) and improves the quality and longevity of life.  This example project uses [Amazon SageMaker](https://aws.amazon.com/sagemaker/) which is managed ML service provided by AWS, and it follows the [CRISP-DM](https://en.wikipedia.org/wiki/Cross-industry_standard_process_for_data_mining) methodology in which the data analytics lifecycle consists of iterative steps:
 
@@ -11,7 +11,7 @@ Improved data and analytical tools can assist healthcare providers in identifyin
 - ML Evaluation
 - ML Deployment
 
-## :heart: 1.0 Heart Failure Domain Understanding
+## :hospital: 1.0 Heart Failure Domain Understanding
 
 Cardiovascular disease (CVD) is a leading cause of death globally, taking approximately 17 million lives each year. CVDs are a group of diseases of the heart and blood vessels and include coronary heart disease, cerebrovascular disease, rheumatic heart disease and other conditions. More than four out of five CVD deaths are due to heart attacks and strokes, and one third of these deaths occur prematurely in people under 70 years of age.
 
@@ -78,9 +78,9 @@ s3.Bucket(s3_bucket).upload_file(local_data_filename, s3_prefix + local_data_fil
 
 Second, I applied data type transformations to convert the columns from the raw character/string types to numeric types because ML models typically require that the input columns be numeric.  
 
-Third, I scaled some of the non-boolean numeric columns using the standardization transform so that the scaled columns have a mean of 0 and standard deviation of 1; these scaled columns reduce the impact of outliers and improve the fit of the algorithm to the supervised training data as well as its ability to generally perform predictions on the evaluation and actual data in the real world.
+Third, I moved the target column to be the first column because that is expected for the built tabular data algorithms such as Linear Learner, KNN, and XGBoost.  I also scaled some of the non-boolean numeric columns using the standardization transform so that the scaled columns have a mean of 0 and standard deviation of 1; these scaled columns reduce the impact of outliers and improve the fit of the algorithm to the supervised training data as well as its ability to generally perform predictions on the evaluation and actual data in the real world.
 
-For both of these operations, Data Wrangler simplifies the data pipeline process with easy, built-in operations that can be created visually in a data pipeline [workflow](02a-DataWrangler-heartdisease-DataFlow.flow) without any code.
+For all of these columnar operations, Data Wrangler simplifies the data pipeline process with easy, built-in operations that can be created visually in a data pipeline [workflow](02a-DataWrangler-heartdisease-DataFlow.flow) without any code.
 
 ![Heart Disease Data Wrangler Data Flow](../assets/heart-disease-2.1.2-datawrangler-flow.png)
 
@@ -131,7 +131,7 @@ Now that the data set has been engineered for features, we can begin to build, e
 
 First, SageMaker supports nearly twenty built-in [Algorithms](https://docs.aws.amazon.com/sagemaker/latest/dg/algos.html), and it also enables you to bring your own and customize them further.  Since this Heart Disease project has been framed as a binary classification problem on tabular data, I planned to use the built-in Linear Learner, K-Nearest Neighbor, and XGBoost models which are all appropriate for tabular data.
 
-Second, I planned to test different sets of hyperparameters across the aforementioned algorithms.  Managing all these iterative activities in an effective manner could be simplified using SageMaker [Experiments](https://aws.amazon.com/blogs/aws/amazon-sagemaker-experiments-organize-track-and-compare-your-machine-learning-trainings/) which enables you to organize, track, compare, and evaluate your machine learning experiments.  SageMaker Experiments automatically tracks the inputs, parameters, configurations, and results of your iterations as trials. You can assign, group, and organize these trials into experiments. SageMaker Experiments is integrated with Amazon SageMaker Studio providing a visual interface to browse your active and past experiments, compare trials on key performance metrics, and identify the best performing models.  In this project, there was one parent Experiment (sm-heartdisease-exp-YYYY-mm-dd), one child trial for each algorithm (sm-heartdisease-trial-algo-YYYY-mm-dd), and multiple trial components (e.g. grandchildren) associated to the artifacts each hyper parameter set assigned to the algorithm.
+Second, I planned to test different sets of hyperparameters across the aforementioned algorithms.  Managing all these iterative activities in an effective manner could be simplified using SageMaker [Experiments](https://aws.amazon.com/blogs/aws/amazon-sagemaker-experiments-organize-track-and-compare-your-machine-learning-trainings/) which enables you to organize, track, compare, and evaluate your machine learning experiments.  SageMaker Experiments automatically tracks the inputs, parameters, configurations, and results of your iterations as trials. You can assign, group, and organize these trials into experiments. SageMaker Experiments is integrated with Amazon SageMaker Studio providing a visual interface to browse your active and past experiments, compare trials on key performance metrics, and identify the best performing models.  In this project, there was one parent Experiment (sm-heartdisease-exp-YYYY-mm-dd), one child trial for each algorithm (sm-heartdisease-trial-algoaaa-YYYY-mm-dd), and multiple trial components (e.g. grandchildren) associated to the model artifacts each hyper parameter set produced for each algorithm.
 
 Third, I needed to efficiently explore the universe of hyperparameters appropriate to each algorithm and find the best version of a model.  Again, this was an opportunity to leverage another SageMaker component for [Automated Model HyperParameter Tuning](https://aws.amazon.com/blogs/machine-learning/amazon-sagemaker-automatic-model-tuning-produces-better-models-faster/) which executes many training jobs in parallel on your data set using the algorithm and ranges of hyperparameters you specify.  It then chooses the hyperparameter values that result in a model that performs the best, as measured by a metric that you choose.
 
