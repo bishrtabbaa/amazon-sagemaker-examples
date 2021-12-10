@@ -2,7 +2,9 @@
 
 ## :bulb: 0.0 Heart Failure Machine Learning Model Motivation
 
-Improved data and analytical tools can assist healthcare providers in identifying patients who are at-risk from heart failure, thus allowing providers to proactively recommend and implement a holistic protocol consisting of lifestyle changes, pharmaceutical drugs, and advanced interventions (e.g. angioplasty, catheter ablation, stent placement, and surgery to repair valves and vessels).  Therefore, data analytics and machine learning (ML) can play an important part in the overall healthcare solution that saves lives from CardioVascular Diseases (CVD) and improves the quality and longevity of life.  This example project uses [Amazon SageMaker](https://aws.amazon.com/sagemaker/) which is a managed ML service provided by Amazon Web Services (AWS), and it follows the [CRISP-DM](https://en.wikipedia.org/wiki/Cross-industry_standard_process_for_data_mining) methodology in which the data analytics lifecycle consists of iterative steps:
+Improved data and analytical tools can assist healthcare providers in identifying patients who are at-risk from heart failure, thus allowing providers to proactively recommend and implement a holistic protocol consisting of lifestyle changes, pharmaceutical drugs, and advanced interventions (e.g. angioplasty, catheter ablation, stent placement, and surgery to repair valves and vessels).  Therefore, data analytics and machine learning (ML) can play an important part in the overall healthcare solution that saves lives from CardioVascular Diseases (CVD) and improves the quality and longevity of life.  
+
+This example project uses [Amazon SageMaker](https://aws.amazon.com/sagemaker/) which is a managed ML service provided by Amazon Web Services (AWS), and it follows the [CRISP-DM](https://en.wikipedia.org/wiki/Cross-industry_standard_process_for_data_mining) methodology in which the data analytics lifecycle consists of iterative steps:
 
 - Business Domain Understanding
 - Data Understanding
@@ -26,7 +28,7 @@ References:
 
 ## :floppy_disk: 2.0 Heart Failure Data Understanding
 
-The data set used to train the ML models in this project consists of 299 records of patients who experienced heart failure while at the Faisalabad Institute of Cardiology and at the Allied Hospital in Faisalabad during the period of April-December 2015; each record consists of thirteen (13) attributes and the target feature is a boolean attribute that denotes whether the patient survived the heart failure or not. Therefore, this ML scenario can be framed as a supervised binary classification problem such that the target feature denotes 1 for death from heart failure and 0 for survival after failure; the goal is to predict whether new incoming patients with a set of similar attributes will survive from heart failure or not.  Also, note that the data set was sourced from the highly regarded and curated [University of California Irvine Machine Learning Repository](https://archive.ics.uci.edu/ml/index.php). 
+The data set used to train the ML models in this project consists of 299 records of patients who experienced heart failure while at the Faisalabad Institute of Cardiology and at the Allied Hospital in Faisalabad during the period of April-December 2015; each record consists of thirteen (13) attributes and the target feature is a boolean attribute that denotes whether the patient survived the heart failure or not. Therefore, this ML scenario can be framed as a supervised binary classification problem such that the target feature denotes 1 for death after heart failure and 0 for survival after failure; the goal is to predict whether new incoming patients with a set of similar attributes will survive from heart failure or not.  Also, note that the data set was sourced from the highly regarded and curated [University of California Irvine Machine Learning Repository (UCI ML)](https://archive.ics.uci.edu/ml/index.php). 
 
 - age: age of the patient (years)
 - anaemia: decrease of red blood cells or hemoglobin (boolean)
@@ -40,7 +42,7 @@ The data set used to train the ML models in this project consists of 299 records
 - serum sodium: level of serum sodium in the blood (mEq/L)
 - smoking: if the patient smokes or not (boolean)
 - time: follow-up period (days)
-- [target] death event: if the patient deceased during the follow-up period (boolean)
+- [target]: death event, if the patient deceased during the follow-up period (boolean)
 
 References:
 - [ML Data Source](https://archive.ics.uci.edu/ml/datasets/Heart+failure+clinical+records)
@@ -101,7 +103,7 @@ Based on the correlation heatmap, one can see that the attributes for serum crea
 
 #### 2.1.4 Data Wrangler - Data Analysis - Collinearity Lasso Feature Selection
 
-Next, I performed a collinearity attribute analysis on the data set columns to double check the earlier correlations and ensure that the most important attributes are included in the ML model.  SageMaker Data Wrangler's Collinearity feature uses a simple Linear Model, and it can be run in the context of classification or regression problems.  In this case, it builds the linear classifier with L1 term regularization and you can control the strength of the L1 penalty.  The classifier itself has a ROC AUC score of 76.3% which is within the order of accuracy of previous work done on this data set without any tuning yet.  Furthermore, the collinearity analysis again confirms the importance age, ejection fraction, serum creatinine, sodium, and blood pressure.  Also, note that classifier standardizes features to have mean 0 and standard deviation 1.
+Next, I performed a collinearity attribute analysis on the data set columns to double check the earlier correlations and ensure that the most important attributes are included in the ML model.  SageMaker Data Wrangler's Collinearity feature uses a simple Linear Model, and it can be run in the context of classification or regression problems.  In this case, it builds the linear classifier with L1 term regularization and you can adjust the strength of the L1 penalty.  The classifier itself has a ROC AUC score of 76.3% which is within the order of accuracy of previous work done on this data set without any tuning yet.  Furthermore, the collinearity analysis again confirms the importance age, ejection fraction, serum creatinine, sodium, and blood pressure.  Also, note that classifier standardizes features to have mean 0 and standard deviation 1.
 
 ![Heart Disease Feature Collinearity](../assets/heart-disease-2.1.4-datawrangler-feature-collinearity.png)
 
@@ -113,11 +115,11 @@ Next, I ran Data Wrangler's Quick Model analysis that uses the Random Forest alg
 
 #### 2.1.6 Data Wrangler - Clean Up
 
-When you are not using Data Wrangler, it is important to shut down the instance on which it runs to avoid incurring additional fees.
+When you are not using Data Wrangler, it is important to shut down the instance on which it runs to avoid incurring additional costs.
 
 To avoid losing work, save your data flow before shutting Data Wrangler down. To save your data flow in Studio, select File and then select Save Data Wrangler Flow. Note that Data Wrangler automatically saves your data flow every 60 seconds.
 
-There are a couple of choices:
+There are a couple of choices for cleanup:
 - From SageMaker Studio, select the Running Instances and Kernels icon.  Under RUNNING APPS is the sagemaker-data-wrangler-1.0 app. Select the shut down icon next to this app.
 - Install the [Jupyter Lab Extensions](https://aws.amazon.com/blogs/machine-learning/save-costs-by-automatically-shutting-down-idle-resources-within-amazon-sagemaker-studio/) for automatically detecting and shutting down idle resources such as a Data Wrangler.  
 
@@ -131,11 +133,11 @@ Now that the data set has been engineered for features, one can begin to build, 
 
 First, SageMaker supports seventeen (17) built-in [Algorithms](https://docs.aws.amazon.com/sagemaker/latest/dg/algos.html), and it also enables you to bring your own algorithm via [Docker](https://docs.aws.amazon.com/sagemaker/latest/dg/docker-containers.html).  Since this Heart Disease project has been framed as a binary classification problem on tabular data, I planned to use the built-in Linear Learner, K-Nearest Neighbor, and XGBoost models which are all appropriate for tabular data.
 
-Second, I planned to test many different sets of hyperparameters across the aforementioned algorithms.  Managing all these iterative activities in an effective manner could be simplified using SageMaker [Experiments](https://aws.amazon.com/blogs/aws/amazon-sagemaker-experiments-organize-track-and-compare-your-machine-learning-trainings/) which enables you to organize, track, compare, and evaluate your machine learning experiments.  SageMaker Experiments automatically tracks the inputs, parameters, configurations, and results of your iterations as trials. You can assign, group, and organize these trials into experiments. SageMaker Experiments is integrated with Amazon SageMaker Studio providing a visual interface to browse your active and past experiments, compare trials on key performance metrics, and identify the best performing models.  In this project, there was one parent Experiment (sm-heart-exp-YYYY-mm-dd), one child trial for each algorithm (sm-heart-trial-algoZZZ-YYYY-mm-dd), and multiple trial components (e.g. grandchildren) representing a specific algorithm and a specific hyper parameter set used in a model training job.
+Second, I planned to test many different sets of hyperparameters across the aforementioned algorithms.  Managing all these iterative activities in an effective manner could be simplified using SageMaker [Experiments](https://aws.amazon.com/blogs/aws/amazon-sagemaker-experiments-organize-track-and-compare-your-machine-learning-trainings/) which enables you to organize, track, compare, and evaluate your machine learning experiments.  SageMaker Experiments automatically tracks the inputs, parameters, configurations, and results of your iterations as trial components. You can assign, group, and organize these trials into experiments. SageMaker Experiments is integrated with Amazon SageMaker Studio providing a visual interface to browse your active and past experiments, compare trials on key performance metrics, and identify the best performing models.  In this project, there was one parent Experiment (sm-heart-exp-YYYY-mm-dd), one child trial for each algorithm (sm-heart-trial-algoZZZ-YYYY-mm-dd), and multiple trial components (e.g. grandchildren) representing a specific algorithm and a specific hyper parameter set used in a model training job.
 
-Third, I needed to efficiently explore the universe of hyperparameters (HP) appropriate to each algorithm and find the best version of a model.  Again, this was an opportunity to leverage another SageMaker component for [Automated Model HyperParameter Tuning](https://aws.amazon.com/blogs/machine-learning/amazon-sagemaker-automatic-model-tuning-produces-better-models-faster/) which executes many training jobs in parallel on your data set using the algorithm and ranges of hyperparameters you specify.  Each HP job run is a trial component, and once the job set has completed, you can choose the best performing model as measured by a classification objective metric (e.g. AUC, Accuracy, F1, Logistic Loss) that you choose.
+Third, I needed to efficiently explore the universe of hyperparameters (HP) appropriate to each algorithm and find the best version of a model.  Again, this was an opportunity to leverage another SageMaker component for [Automated Model HyperParameter Tuning](https://aws.amazon.com/blogs/machine-learning/amazon-sagemaker-automatic-model-tuning-produces-better-models-faster/) which executes many training jobs in parallel on your data set using the algorithm, the ranges of hyperparameters, and a search strategy, all of which can be specified based on your needs.  Each HP training job run is a trial component, and once the job set has completed, you can choose the best performing model as measured by a classification objective metric (e.g. AUC, Accuracy, F1, Logistic Loss) that you choose.
 
-Each Jupyter Notebook for the different algorithms has several common code blocks for the environment setup as well as the ML model initialization, training, tuning, and evaluation.  Cell blocks 00-07 are parameterized by the algorithm ID, the S3 path for the model, splitting data into training (80%) and test (20%) data subsets, as well as the trial naming convention that is specific to the algorithm.
+Each Jupyter Notebook for the different algorithms has several common code blocks for the environment setup as well as the ML model initialization, training, tuning, and evaluation.  Cell blocks 00-07 are cleanly parameterized by the algorithm ID, the S3 path for the model, splitting data into training (80%) and test (20%) data subsets, as well as the trial naming convention that is specific to the algorithm.
 
 ```
 # cell 01
@@ -162,7 +164,7 @@ sm = boto3.Session().client(service_name='sagemaker',region_name=region)
 s3 = boto3.Session().resource('s3')
 ```
 
-Experiments (grandparent) and trials (algorithmic parent) are constructed on a daily cadence to organize all the individual trial components (grandchildren) that represent specific ML model training jobs consisting of an algorithm and its related hyperparameters.
+[Experiments](https://sagemaker-experiments.readthedocs.io/en/latest/experiment.html) (parent) and trials (algorithmic child) are constructed on a daily cadence to organize all the individual trial components (grandchildren) that represent specific ML model training jobs consisting of an algorithm and its related hyperparameters.
 
 ```
 # cell 06
@@ -198,7 +200,7 @@ except Exception as ex:
         
 ```
 
-Once the experiment and trial exist, one can construct an Estimator specific to the algorithm and initialize it with a debugger hook so that later on, one can later run Clarify bias and explainability processing jobs.
+Once the experiment and trial exist, one can construct an [Estimator](https://sagemaker.readthedocs.io/en/stable/api/training/estimators.html) specific to the algorithm and initialize it with a debugger hook so that later on, one can later run Clarify bias and explainability processing jobs.  Note that the Estimator is a key SageMaker entity and has many parameters in particular, the algorithm Docker container ID, the IAM security role, and EC2 instance count, an EC2 instance type, a file input mode, a model output path, tags, hooks for debugging and profiling, as well as several security parameters.
 
 ```
  cell 07
@@ -231,7 +233,7 @@ s3_input_train = sagemaker.inputs.TrainingInput(s3_data='s3://{}/{}/train'.forma
 s3_input_validation = sagemaker.inputs.TrainingInput(s3_data='s3://{}/{}/test/'.format(s3_bucket, s3_model_prefix), content_type='csv')
 ```
 
-The code that is truly specific to the algorithm (parent trial) and its family of trial components occurs when defininig the HyperParameterTuner job and evaluate the model(s) once they have been tuned and trained.
+The code that is truly specific to the algorithm trial and its family of trial components occurs when one defines the [HyperParameterTuner](https://sagemaker.readthedocs.io/en/stable/api/training/tuner.html) job and evaluates the model(s) once they have been tuned and trained.
 
 ```
 #cell 08 ... HyperParameterTuner.Job.Run()
@@ -265,7 +267,7 @@ print('Defined ML model HyperParameterTuner job for {}'.format(trial_prefix))
 ml_tuner.fit({'train': s3_input_train, 'validation': s3_input_validation})
 ```
 
-Once the HyperParameterTuner job has completed, one programmatically select the best performing ML model and then deploy.
+Once the HyperParameterTuner job has completed, one programmatically select the best performing ML model and then deploy the [Predictor] (https://sagemaker.readthedocs.io/en/stable/api/inference/predictors.html) to an inference endpoint.  Once the model has been deployed, one can then evaluate and execute inference on the test data.
 
 ```
 # cell 10 ... select best training job per the eval metric
@@ -275,7 +277,7 @@ ml_tuner.best_training_job()
 ml_tuner_predictor = ml_tuner.deploy(initial_instance_count=1, instance_type='ml.m4.xlarge', serializer=sagemaker.serializers.CSVSerializer())
 ```
 
-Once the model has been deployed, one can evaluate and execute inference on the test data.
+Once there are some predictions on test data, we can analyze the confusion matrix and calculate the important classification metrics (e.g. Precision, Recall, Accuracy, F1, AUC) using the [scikit-learn metrics](https://scikit-learn.org/stable/modules/classes.html#module-sklearn.metrics) module.  Note in block 12 of the notebooks that the predict helper function slightly differs based on the algorithm's specific response output format.
 
 ```
 # cell 12 .. calculate predictions for XGBoost
@@ -309,7 +311,6 @@ print(predictions)
 # calculate confusion matrix
 pd.crosstab(index=test_labels, columns=np.round(predictions), rownames=["actual"],colnames=["predictions"])
 ```
-Once there are some predictions on test data, we can analyze the confusion matrix and calculate the important classification metrics (e.g. Precision, Recall, Accuracy, F1, AUC) using the scikit-learn metrics module.  Note in block 12 of the notebooks that the predict helper function slightly differs based on the algorithm's response output format.
 
 ```
 # cell 14 ... calculate classification metrics
@@ -390,10 +391,9 @@ def predict(predictor, data, verbose=False):
     return predictions
 ```
 
-
 #### 3.2 K-Nearest Neighbor Model
 
-Amazon SageMaker K-Nearest Neighbor (KNN) is a non-parametric, supervised algorithm that queries the k points that are closes to the sample point and returns the most frequently used label of their class or average of the independent variable as the prediction.  KNN is appropriate for both classification and regression problems.  KNN requires a tabular data matrix with rows representing observations and columns representing the dimensions of the features.  It also requires a column that contains the labels that match the data points.    During training, KNN is constructing an index that enables efficient lookups of distances betwen points whose values or class labels have not yet been determined and the k nearest points to use for inference.
+Amazon SageMaker K-Nearest Neighbor (KNN) is a supervised algorithm that queries the k points that are closest to the sample point and returns the most frequently used label of their class or average of the independent variable as the prediction.  KNN is appropriate for both classification and regression problems.  KNN requires a tabular data matrix with rows representing observations and columns representing the dimensions of the features.  It also requires a column that contains the labels that match the data points.    During training, KNN is constructing an index that enables efficient lookups of distances betwen points whose values or class labels have not yet been determined and the k nearest points to use for inference.
 
 The first algorithm specific code block is for S3 and algorithm initialization in cell 01.  The algorithm variable used to identify the proper SageMaker Docker container when constructing the Estimator object in block cell 08.
 
@@ -536,9 +536,9 @@ def predict(predictor, data, rows=500, verbose=False):
 
 Each Jupyter Notebook for each algorithm shows how to assess the best performing model within the algorithmic family of trial components by running a test data set against an inference endpoint hosting the tuned model.  Classification metrics were then calculated using the scikit-learn metrics module.  
 
-The XGBoost model had the best overall performance with AUC scores exceeding 82% and F1 score of better than 80%; the Linear Learner model had AUC scores exceeding 78% and F1 scores around 74% while the KNN model had accuracy around 75% but AUC scores lower around 65% suggesting a susceptibility to imbalance in the data.  These results compare favorably with earlier work by Chicco and Jurman referenced earlier.
+The XGBoost model had the best overall performance with AUC scores exceeding 82% and F1 score better than 80%; the Linear Learner model had AUC scores exceeding 78% and F1 scores around 74% while the KNN model had accuracy around 75% but lower AUC scores around 65% suggesting a susceptibility to imbalance in the data and a tendency to overfit to the training data.  These results compare favorably with earlier work by Chicco and Jurman referenced earlier.
 
-SageMaker Experiments also makes it simple to visually and numerically compare the model results spanning hundreds to thousands of individual trial components that comprise different algorithms and different hyperparameters all organized as part of one larger experiment associated to a business use case.  Note under the grandparent experiment (sm-heart-exp-2021-12-08), there are three algorithmic parent trials (sm-heart-ll-trial-2021-12-08, sm-heart-xgb-trial-2021-12-08, sm-heart-knn-trial-2021-12-08) each associated to HyperParameterTuner job consisting of a set of trial component runs (grandchildren) corresponding to individual training jobs.  Again, the virtue of SageMaker is that it provides a flexible Experiment framework so that we can expand this Heart Disease Analytics experiment by widening the hyperparameter ranges, increasing the number of training jobs, and by even introducing additional algorithms such as Artificial Neural Nets without fundamentally altering the Notebook code or overall Experiment Management; it becomes a matter of gently amending the initialization variables and the hyperparameter ranges specific to the algorithm.
+SageMaker Experiments also makes it simple to visually and numerically compare the model results spanning hundreds to thousands of individual trial components that comprise different algorithms and different hyperparameters all organized as part of one larger experiment associated to a business use case.  Note under the parent experiment (sm-heart-exp-2021-12-08), there are three algorithmic child trials (sm-heart-ll-trial-2021-12-08, sm-heart-xgb-trial-2021-12-08, sm-heart-knn-trial-2021-12-08) each associated to HyperParameterTuner job consisting of a set of trial component runs (grandchildren) corresponding to individual training jobs.  Again, the virtue of SageMaker is that it provides a flexible Experiment framework so that we can expand this Heart Disease Analytics project by widening the hyperparameter ranges, increasing the number of training jobs, and by even introducing additional algorithms such as Artificial Neural Nets without fundamentally altering the Notebook code or overall Experiment Management; it becomes a matter of gently amending the initialization variables and the hyperparameter ranges specific to the algorithm.
 
 Examine a tabular summary of all the trial components across algorithmic trials organized within a larger experiment.
 
@@ -548,10 +548,6 @@ Then examine the details of a single trial component related to a specific model
 
 ![Heart Disease Model Experiments](../assets/heart-disease-3.4-trials.png)
 
-## :computer: 4.0 Heart Failure Machine Learning Model Deployment
+## :sun_behind_large_cloud: 4.0 Conclusion
 
-abc123
-
-## :sun_behind_large_cloud: 5.0 Conclusion
-
-abc123
+In this Heart Disease ML project, we demonstrated how Amazon SageMaker can simplify the ML lifecycle and improve the quality of ML models using features such as Data Wrangler, integrated Jupyter notebook authoring, robust algorithms, and comprehensive experiment management.  With SageMaker, data scientists and developers can quickly and easily build and train machine learning models, and then directly deploy them into a production-ready hosted environment. It provides an integrated Jupyter authoring notebook instance for easy access to your data sources for exploration and analysis, so you don't have to manage servers. It also provides common machine learning algorithms that are optimized to run efficiently against extremely large data in a distributed environment. With native support for bring-your-own-algorithms and frameworks, SageMaker offers flexible distributed training options that adjust to your specific workflows. Deploy a model into a secure and scalable environment by launching it with a few clicks from SageMaker Studio or the SageMaker console. Training and hosting are billed by minutes of usage, with no minimum fees and no upfront commitments.
