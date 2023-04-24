@@ -18,3 +18,4 @@ The quickest setup to run example notebooks includes:
 These examples provide an introduction to machine learning concepts as well as SageMaker.
 
 - [Heart Failure Prediction](heartdisease) predicts congestive heart failure based on patient data such as age, gender, smoking, blood pressure, and other biochemical markers.  The patient [data set](https://archive.ics.uci.edu/ml/datasets/Heart+failure+clinical+records) consists of 299 anonymized records sourced from the University California at Irvine Machine Learning Repository.  This example uses a number of SageMaker components for building, tuning, tracking, and deploying ML models and it demonstrates several ML algorithms including XGBoost, Linear Learner, and K-Nearest Neighbor.
+- [Multi Model Endpoints](mme) demonstrates an XGBoost model build, train, deploy, and test scenario for SageMaker Multi-Model Endpoints (MME).
